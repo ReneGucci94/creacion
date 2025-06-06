@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+openai
+requests
+pandas
+numpy
+httpx
