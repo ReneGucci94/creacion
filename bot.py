@@ -1,5 +1,6 @@
 import asyncio
 import aiohttp
+import os
 import pandas as pd
 import numpy as np
 from datetime import datetime
@@ -7,7 +8,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, CallbackQueryHandler, MessageHandler, filters
 
 # === CONFIGURACIÓN INICIAL ===
-TOKEN = "7970188460:AAH0pIG-_AYmifuuE5oserEr8ivDrqyGmm8"
+TOKEN = os.getenv("TOKEN")
 user_id_telegram = None
 modo_sniper_activo = False
 activo_actual = None
