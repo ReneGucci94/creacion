@@ -10,7 +10,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, Callb
 TOKEN = "7970188460:AAH0pIG-_AYmifuuE5oserEr8ivDrqyGmm8"
 user_id_telegram = None
 modo_sniper_activo = False
-activo_actual = "EUR/USD"
+activo_actual = None
 modo_actual = ""
 contador_senales = 0
 mensaje_editable_id = None
@@ -223,7 +223,8 @@ Ya no se enviarán más señales en tiempo real.
 
 async def loop_senal_automatica():
     while True:
-        await enviar_senal("USD/JPY", "15m", "fxpro")
+        if activo_actual:
+            await enviar_senal(activo_actual, "15m", "fxpro")
         await asyncio.sleep(60)
 
 # Indicadores para sniper
