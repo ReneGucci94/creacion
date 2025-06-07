@@ -1,8 +1,9 @@
+import os
 import pandas as pd
 import requests
 
 def obtener_ultimas_velas(activo, intervalo="1h", limite=100):
-    apikey = "67ab0a13aa3948e9b6c5f06198f8452d"
+    apikey = os.getenv("API_KEY")
     if activo.endswith("USDT") and "/" not in activo:
         activo = activo[:-4] + "/USD"
     url = (

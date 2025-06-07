@@ -1,7 +1,8 @@
+import os
 import pandas as pd
 import requests
 
-API_KEY = "67ab0a13aa3948e9b6c5f06198f8452d"
+API_KEY = os.getenv("API_KEY")
 
 _INTERVAL_MAP = {
     "1m": "1min",
