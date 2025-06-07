@@ -173,10 +173,10 @@ async def boton_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     data = query.data
     global activo_actual, modo_actual, modo_sniper_activo, contador_senales
     if data == "menu":
-        keyboard = [[InlineKeyboardButton(par, callback_data=f"par_{par}")] for par in activos_validos]
+        keyboard = [[InlineKeyboardButton(par, callback_data=par)] for par in activos_validos]
         await query.edit_message_text("Selecciona el par que quieres analizar:", reply_markup=InlineKeyboardMarkup(keyboard))
-    elif data.startswith("par_"):
-        activo_actual = data.replace("par_", "")
+    elif data in activos_validos:
+        activo_actual = data
         keyboard = [[
             InlineKeyboardButton("DayTrader", callback_data="modo_day"),
             InlineKeyboardButton("SwingTrader", callback_data="modo_swing")
