@@ -225,7 +225,7 @@ Ya no se enviarán más señales en tiempo real.
 async def loop_senal_automatica():
     while True:
         if activo_actual:
-            await enviar_senal(activo_actual, "15m", "fxpro")
+            await enviar_senal(activo_actual, "15m", "senal_automatica")
         await asyncio.sleep(60)
 
 # Indicadores para sniper
