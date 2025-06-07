@@ -17,6 +17,7 @@ contador_senales = 0
 mensaje_editable_id = None
 ultimo_mensaje_fxpro = ""
 ultimo_mensaje_signalpro = ""
+senal_automatica_activada = False
 
 activos_validos = [
     "EUR/USD", "USD/JPY", "GBP/USD", "BTC/USD",
@@ -172,17 +173,25 @@ async def boton_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     data = query.data
-    global activo_actual, modo_actual, modo_sniper_activo, contador_senales
+    global activo_actual, modo_actual, modo_sniper_activo, contador_senales, senal_automatica_activada
     if data == "menu":
         keyboard = [[InlineKeyboardButton(par, callback_data=par)] for par in activos_validos]
         await query.edit_message_text("Selecciona el par que quieres analizar:", reply_markup=InlineKeyboardMarkup(keyboard))
     elif data in activos_validos:
         activo_actual = data
-        keyboard = [[
-            InlineKeyboardButton("DayTrader", callback_data="modo_day"),
-            InlineKeyboardButton("SwingTrader", callback_data="modo_swing")
-        ], [InlineKeyboardButton("⚡ Scalping", callback_data="scalp_on")]]
-        await query.edit_message_text(f"Par seleccionado: {activo_actual}\nSelecciona tu modo:", reply_markup=InlineKeyboardMarkup(keyboard))
+        keyboard = [
+            [InlineKeyboardButton("DayTrader", callback_data="modo_day"),
+             InlineKeyboardButton("SwingTrader", callback_data="modo_swing")],
+            [InlineKeyboardButton("⚡ Scalping", callback_data="scalp_on")]
+        ]
+        if senal_automatica_activada:
+            keyboard.append([InlineKeyboardButton("🛑 Detener señal automática", callback_data="auto_off")])
+        else:
+            keyboard.append([InlineKeyboardButton("🤖 Señal automática", callback_data="auto_on")])
+        await query.edit_message_text(
+            f"Par seleccionado: {activo_actual}\nSelecciona tu modo:",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
     elif data in ["modo_day", "modo_swing"]:
         modo_actual = "DayTrader" if data == "modo_day" else "SwingTrader"
         buttons = [
@@ -195,6 +204,22 @@ async def boton_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await mostrar_fxpro(query)
     elif data == "signalpro":
         await mostrar_signalpro(query)
+    elif data == "auto_on":
+        senal_automatica_activada = True
+        buttons = [
+            [InlineKeyboardButton("🛑 Detener señal automática", callback_data="auto_off")],
+            [InlineKeyboardButton("🏠 Menú principal", callback_data="menu")]
+        ]
+        await query.edit_message_text(
+            "🤖 Señal automática activada. El bot enviará señales periódicamente.",
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )
+    elif data == "auto_off":
+        senal_automatica_activada = False
+        await query.edit_message_text(
+            "🛑 Señal automática detenida.",
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🏠 Menú principal", callback_data="menu")]])
+        )
     elif data == "scalp_on":
         modo_actual = "Scalping"
         modo_sniper_activo = True
@@ -224,7 +249,7 @@ Ya no se enviarán más señales en tiempo real.
 
 async def loop_senal_automatica():
     while True:
-        if activo_actual:
+        if senal_automatica_activada and activo_actual:
             await enviar_senal(activo_actual, "15m", "senal_automatica")
         await asyncio.sleep(60)
 
